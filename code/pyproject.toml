@@ -1,0 +1,106 @@
+# Crucible — uv workspace root.
+# This is a *virtual* root: it is not itself a package, it only anchors the
+# workspace, the dev toolchain, and shared tool configuration.
+# See ../docs/03-repo-and-modularization.md and ../docs/09-engineering-standards.md
+[project]
+name = "crucible-workspace"
+version = "0.0.0"
+description = "Crucible monorepo workspace root (virtual; not published)."
+requires-python = ">=3.11"
+dependencies = []
+
+# --- uv workspace -----------------------------------------------------------
+[tool.uv]
+package = false  # the root is a virtual anchor, never built/installed
+
+[tool.uv.workspace]
+members = [
+    "packages/*",
+    "apps/token-saver",
+    "bench/*",
+]
+# apps/calculator is intentionally NOT a member: it is a web front-end whose
+# stack is TBD (see apps/calculator/README.md), not a Python package.
+
+# Intra-workspace dependencies always resolve to the local source, never PyPI.
+[tool.uv.sources]
+crucible-engine        = { workspace = true }
+crucible-grammar       = { workspace = true }
+crucible-atomix        = { workspace = true }
+crucible-tokeneconomy  = { workspace = true }
+crucible-core          = { workspace = true }
+crucible-verify        = { workspace = true }
+crucible-search        = { workspace = true }
+crucible-memory        = { workspace = true }
+crucible-evolve        = { workspace = true }
+crucible-gate          = { workspace = true }
+crucible-govern        = { workspace = true }
+crucible-federation    = { workspace = true }
+crucible-bench         = { workspace = true }
+crucible-token-saver   = { workspace = true }
+
+# --- dev toolchain (installed by `uv sync` via the default dev group) --------
+[dependency-groups]
+dev = [
+    "ruff>=0.7",
+    "pyright>=1.1.380",
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "hypothesis>=6.100",
+    "import-linter>=2.0",
+    "pre-commit>=3.7",
+]
+
+# --- ruff (lint + format) ---------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = [
+    "packages/*/src",
+    "apps/*/src",
+    "bench/*/src",
+    "tests",
+]
+
+[tool.ruff.lint]
+select = [
+    "E", "F", "W",   # pycodestyle / pyflakes
+    "I",             # isort
+    "UP",            # pyupgrade
+    "B",             # flake8-bugbear
+    "C4",            # comprehensions
+    "SIM",           # simplify
+    "RUF",           # ruff-specific
+]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = [
+    "crucible_engine", "crucible_grammar", "crucible_atomix",
+    "crucible_tokeneconomy", "crucible_core", "crucible_verify",
+    "crucible_search", "crucible_memory", "crucible_evolve",
+    "crucible_gate", "crucible_govern", "crucible_federation",
+    "crucible_bench", "crucible_token_saver",
+]
+
+# --- pytest -----------------------------------------------------------------
+[tool.pytest.ini_options]
+minversion = "8.0"
+# importlib import-mode lets same-named test files (test_smoke.py) coexist across
+# packages without __init__.py boilerplate in every tests/ dir.
+addopts = "-ra --strict-markers --strict-config --import-mode=importlib"
+testpaths = ["packages", "apps", "bench", "tests"]
+markers = [
+    "slow: tests that need a model/GPU or are otherwise heavy (deselect with -m 'not slow')",
+    "todo: a placeholder for an invariant we will implement (kept skipped on purpose)",
+]
+
+# --- coverage ---------------------------------------------------------------
+[tool.coverage.run]
+branch = true
+source = ["crucible_engine", "crucible_grammar", "crucible_atomix",
+          "crucible_tokeneconomy", "crucible_core"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false

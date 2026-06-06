@@ -1,0 +1,21 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "crucible-core"
+version = "0.0.1"
+description = "Crucible Core (P1): the inference-native orchestrator / agent loop over the substrate."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+authors = [{ name = "Samuel Dagne" }]
+dependencies = [
+    "crucible-engine",
+    "crucible-grammar",
+    "crucible-atomix",
+    "crucible-tokeneconomy",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/crucible_core"]

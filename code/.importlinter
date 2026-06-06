@@ -1,0 +1,37 @@
+# Enforces the acyclic, one-directional package graph from
+# ../docs/03-repo-and-modularization.md. If this fails, the design is wrong,
+# not the linter (docs/09-engineering-standards.md).
+[importlinter]
+root_packages =
+    crucible_engine
+    crucible_grammar
+    crucible_atomix
+    crucible_tokeneconomy
+    crucible_core
+
+[importlinter:contract:layers]
+name = Crucible layered architecture (Product 1 substrate)
+type = layers
+layers =
+    crucible_core
+    crucible_tokeneconomy
+    crucible_grammar | crucible_atomix
+    crucible_engine
+# Read top-to-bottom = high-to-low. A lower layer may never import a higher one,
+# and grammar/atomix (same layer) must stay independent of each other.
+# crucible_engine owns the control-surface contract and depends on no sibling.
+
+[importlinter:contract:no-internal-reach]
+name = Packages import only public APIs, never another package's internals
+type = forbidden
+source_modules =
+    crucible_core
+    crucible_tokeneconomy
+    crucible_grammar
+    crucible_atomix
+forbidden_modules =
+    crucible_engine._internal
+    crucible_grammar._internal
+    crucible_atomix._internal
+    crucible_tokeneconomy._internal
+    crucible_core._internal

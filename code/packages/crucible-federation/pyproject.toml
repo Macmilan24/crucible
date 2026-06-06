@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "crucible-federation"
+version = "0.0.1"
+description = "FEaTS: privacy-preserving federated distillation of gated abstractions (P8)."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+authors = [{ name = "Samuel Dagne" }]
+dependencies = []
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/crucible_federation"]

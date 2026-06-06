@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "crucible-tokeneconomy"
+version = "0.0.1"
+description = "The token economy: adaptive Chain-of-Draft reasoning budgets and typed KV-cache inter-agent handoffs."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+authors = [{ name = "Samuel Dagne" }]
+dependencies = ["crucible-engine", "crucible-grammar"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/crucible_tokeneconomy"]

@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "crucible-evolve"
+version = "0.0.1"
+description = "Teacher-grounded self-improvement: ACE / PANDO / CG-TTRL / ROSE / EaTS / SGC (P5-6)."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+authors = [{ name = "Samuel Dagne" }]
+dependencies = []
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/crucible_evolve"]

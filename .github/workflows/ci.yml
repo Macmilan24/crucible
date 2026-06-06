@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# The Python workspace lives in code/; every job runs there through uv.
+defaults:
+  run:
+    working-directory: code
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Sync workspace (locked)
+        run: uv sync --all-packages --frozen
+
+      - name: Lint (ruff)
+        run: uv run ruff check .
+
+      - name: Format check (ruff)
+        run: uv run ruff format --check .
+
+      - name: Type-check (pyright)
+        run: uv run pyright
+
+      - name: Import boundaries (import-linter)
+        run: uv run lint-imports --config .importlinter
+
+      - name: Tests (excluding slow/model tests)
+        run: uv run pytest -m "not slow" --cov --cov-report=term-missing
+
+  # Heavy suites (models/GPU) run on a schedule, not on every PR. Placeholder
+  # until the SGLang integration + benchmark runners land.
+  # evaluation:
+  #   if: github.event_name == 'schedule'
+  #   runs-on: [self-hosted, gpu]
+  #   ...

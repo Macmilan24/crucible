@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "crucible-atomix"
+version = "0.0.1"
+description = "Transactional settlement for agent tool calls: epochs, scopes, effects, reversibility classes, atomic abort."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+authors = [{ name = "Samuel Dagne" }]
+dependencies = []
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/crucible_atomix"]

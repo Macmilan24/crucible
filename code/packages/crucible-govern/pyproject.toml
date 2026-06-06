@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "crucible-govern"
+version = "0.0.1"
+description = "Governance & security: capability sandboxing, temporal-logic monitors, constitution probe (P7)."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+authors = [{ name = "Samuel Dagne" }]
+dependencies = []
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/crucible_govern"]

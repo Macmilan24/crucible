@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "crucible-search"
+version = "0.0.1"
+description = "Verifier-Guided Speculative Search (VGSS) and the Value-of-Information compute market (P3)."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+authors = [{ name = "Samuel Dagne" }]
+dependencies = []
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/crucible_search"]

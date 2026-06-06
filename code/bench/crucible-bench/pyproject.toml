@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "crucible-bench"
+version = "0.0.1"
+description = "0a: the reproducible benchmark harness — tokens, malformed-rate, success; encodes the Phase-0 gate."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+authors = [{ name = "Samuel Dagne" }]
+dependencies = ["crucible-core"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/crucible_bench"]

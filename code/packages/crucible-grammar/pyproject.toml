@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "crucible-grammar"
+version = "0.0.1"
+description = "Trajectory grammar + two-phase emission masking: constrain emission, never cognition (zero structural hallucination)."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+authors = [{ name = "Samuel Dagne" }]
+dependencies = ["crucible-engine"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/crucible_grammar"]

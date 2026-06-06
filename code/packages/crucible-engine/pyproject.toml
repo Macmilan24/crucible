@@ -1,0 +1,21 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "crucible-engine"
+version = "0.0.1"
+description = "The inference-native control-surface contract and SGLang integration — the orchestrator↔engine boundary (the wall)."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+authors = [{ name = "Samuel Dagne" }]
+dependencies = []
+
+# Heavy runtime deps are deferred until real engine integration (ADR-0003).
+# They are platform/GPU-specific and intentionally NOT installed for the scaffold:
+# [project.optional-dependencies]
+# engine = ["sglang>=...", "torch>=...", "xgrammar>=..."]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/crucible_engine"]

@@ -1,0 +1,37 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+*.so
+
+# --- uv / venv ---
+.venv/
+venv/
+# uv.lock IS committed (reproducibility); do not ignore it.
+
+# --- tooling caches ---
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.pyright/
+.coverage
+htmlcov/
+coverage.xml
+
+# --- editors / OS ---
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# --- secrets / local env (never commit) ---
+.env
+.env.*
+*.local
+
+# --- benchmark/experiment artifacts (large; released separately) ---
+bench/**/runs/
+*.log

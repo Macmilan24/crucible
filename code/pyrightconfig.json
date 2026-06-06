@@ -1,0 +1,23 @@
+{
+  "venvPath": ".",
+  "venv": ".venv",
+  "pythonVersion": "3.11",
+  "include": [
+    "packages",
+    "apps",
+    "bench",
+    "tests"
+  ],
+  "exclude": [
+    "**/__pycache__",
+    "**/.venv"
+  ],
+  "typeCheckingMode": "basic",
+  "reportMissingImports": true,
+  "reportMissingTypeStubs": false,
+  "strict": [
+    "packages/crucible-engine/src",
+    "packages/crucible-grammar/src",
+    "packages/crucible-gate/src"
+  ]
+}
