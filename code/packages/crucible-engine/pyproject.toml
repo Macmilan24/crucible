@@ -12,10 +12,12 @@ license = "Apache-2.0"
 authors = [{ name = "Samuel Dagne" }]
 dependencies = []
 
-# Heavy runtime deps are deferred until real engine integration (ADR-0003).
-# They are platform/GPU-specific and intentionally NOT installed for the scaffold:
-# [project.optional-dependencies]
-# engine = ["sglang>=...", "torch>=...", "xgrammar>=..."]
+[project.optional-dependencies]
+# The Mac/Apple-Silicon engine backend (real, runs today). ADR-0003: engine access
+# is isolated here, so this is an additive backend, not a rewrite.
+llama = ["llama-cpp-python>=0.3.2"]
+# The paper's engine-of-record, for when a CUDA GPU is available (deferred):
+# cuda = ["sglang>=...", "torch>=...", "xgrammar>=..."]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/crucible_engine"]

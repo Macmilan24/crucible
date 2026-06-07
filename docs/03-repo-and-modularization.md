@@ -15,36 +15,46 @@ The strategy paper's horizontal spin-outs are not an afterthought — they are h
 | **Consolidation memory** | `crucible-memory` | three-tier memory + sleep-time consolidation for any agent | Memory (P4) |
 | **Federation coordinator** | `crucible-federation` | privacy-preserving federated distillation as a service | Federation (P8) |
 
-## Proposed monorepo layout
+## Monorepo layout
 
-> Layout only — **no scaffolding is being created this session** (docs-only). This is the target we will scaffold when we start P1.
+> **Scaffolded and live.** All source lives in [`../code/`](../code/) — a single `uv`
+> workspace, kept out of `paper/` and `docs/`. Git, CI, and licensing live at the
+> repo root. The full gate (lint + types + import boundaries + tests) is green.
+> See [`../code/README.md`](../code/README.md) to run it.
 
 ```
-crucible/
-├── README.md
-├── docs/                         # ← this foundation
-├── paper/                        # the research
-├── packages/                     # each dir is a future standalone repo
-│   ├── crucible-core/            # P1: orchestrator, two-phase decoding policy, agent loop
-│   ├── crucible-grammar/         # spin-out: trajectory grammar + emission masking (XGrammar-2)
-│   ├── crucible-atomix/          # spin-out: transactional settlement runtime
-│   ├── crucible-tokeneconomy/    # Chain-of-Draft + KV-cache inter-agent comms (Core internals)
-│   ├── crucible-engine/          # SGLang integration: control-surface contract impl
-│   ├── crucible-verify/          # P2 (design-only now): GenPRM/AgentPRM verifier
-│   ├── crucible-search/          # P3: VGSS controller (design-only now)
-│   ├── crucible-memory/          # P4: three-tier memory + STC (design-only now)
-│   ├── crucible-evolve/          # P5–6: ACE/PANDO/CG-TTRL/ROSE (design-only now)
-│   ├── crucible-gate/            # the DP holdout + FDR + canary gate (design-only now)
-│   ├── crucible-govern/          # P7: sandboxing + LTL monitors (design-only now)
-│   └── crucible-federation/      # P8: FEaTS coordinator (design-only now)
-├── apps/
-│   ├── token-saver/              # 0b: drop-in wrapper CLI/library
-│   └── calculator/               # 0c: public token calculator (web)
-├── bench/
-│   └── crucible-bench/           # 0a: the reproducible benchmark harness
-├── tools/                        # repo tooling, codegen, release scripts
-└── tests/                        # cross-package integration + e2e
+crucible/                          # repo root (git, CI, license)
+├── README.md · CONTRIBUTING.md
+├── .github/workflows/ci.yml       # CI runs the gate inside code/
+├── .pre-commit-config.yaml · .gitignore
+├── paper/                         # the research (PDFs)
+├── docs/                          # ← this foundation
+└── code/                          # the uv workspace — ALL source lives here
+    ├── pyproject.toml             # workspace root (virtual): dev tools + shared config
+    ├── uv.lock                    # committed for reproducibility
+    ├── .python-version · pyrightconfig.json · .importlinter · Makefile
+    ├── packages/                  # each dir is a future standalone repo
+    │   ├── crucible-engine/       # 🟢 control-surface contract + SGLang integration
+    │   ├── crucible-grammar/      # 🟢 trajectory grammar + two-phase emission masking
+    │   ├── crucible-atomix/       # 🟢 transactional settlement runtime
+    │   ├── crucible-tokeneconomy/ # 🟢 Chain-of-Draft + KV-cache inter-agent comms
+    │   ├── crucible-core/         # 🟢 P1: orchestrator / agent loop
+    │   ├── crucible-verify/       # 🟡 GenPRM/AgentPRM verifier (P2)
+    │   ├── crucible-search/       # 🟡 VGSS + VoI (P3)
+    │   ├── crucible-memory/       # 🟡 three-tier memory + STC (P4)
+    │   ├── crucible-evolve/       # 🟡 ACE/PANDO/CG-TTRL/ROSE (P5–6)
+    │   ├── crucible-gate/         # 🟡 DP holdout + FDR + canary gate
+    │   ├── crucible-govern/       # ⚪ sandboxing + LTL monitors (P7)
+    │   └── crucible-federation/   # ⚪ FEaTS coordinator (P8)
+    ├── apps/
+    │   ├── token-saver/           # 🟢 0b: drop-in wrapper (true subset of Core)
+    │   └── calculator/            # 🟢 0c: token calculator (web; not a Python member)
+    ├── bench/
+    │   └── crucible-bench/        # 🟢 0a: reproducible benchmark harness + Phase-0 gate
+    ├── tools/                     # repo tooling, codegen, release scripts
+    └── tests/                     # cross-package integration + e2e
 ```
+🟢 implemented (scaffold) · 🟡 design-only · ⚪ future
 
 ### Dependency direction (must stay acyclic)
 

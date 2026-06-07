@@ -12,6 +12,7 @@ from .contract import (
     ControlSurface,
     DraftProposal,
 )
+from .llama_backend import Generation, LlamaCppEngine
 from .mock import ROOT, MockEngine
 
 __version__ = "0.0.1"
@@ -22,6 +23,8 @@ __all__ = [
     "CacheNodeId",
     "ControlSurface",
     "DraftProposal",
+    "Generation",
+    "LlamaCppEngine",
     "MockEngine",
     "__version__",
 ]

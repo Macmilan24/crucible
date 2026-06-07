@@ -12,10 +12,21 @@ This repository is the home of the Crucible system. It is currently at the **pre
 
 | | |
 |---|---|
-| **Phase** | Pre-implementation — foundation & specs |
+| **Phase** | Foundation complete; **monorepo scaffolded** — building Phase 0 + P1 |
 | **First build target** | Phase 0 wedge (benchmark + token-saver + calculator) → **Product 1: Crucible Core** |
+| **Code** | [`code/`](code/) — a single `uv` workspace (kept out of `paper/` and `docs/`). Gate is green: lint + types + import-boundaries + 43 tests. |
 | **Repo model** | Private monorepo now → extract spin-out libraries to their own repos later |
 | **Primary stack** | Python 3.11+, SGLang (RadixAttention / XGrammar-2 / EAGLE-3), veRL, BitNet.cpp, SQLite + vector index |
+
+## Build it
+
+```bash
+cd code
+uv sync --all-packages   # creates .venv, installs every workspace package + dev tools
+make check               # lint + type-check + import-boundaries + tests
+```
+
+See [`code/README.md`](code/README.md) for the workspace layout and conventions.
 
 ## The documents
 

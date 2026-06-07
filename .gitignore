@@ -32,6 +32,10 @@ coverage.xml
 .env.*
 *.local
 
+# --- models (large; downloaded, never committed) ---
+code/models/
+*.gguf
+
 # --- benchmark/experiment artifacts (large; released separately) ---
 bench/**/runs/
 *.log
