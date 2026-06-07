@@ -12,8 +12,12 @@ deliberately kept out of here.
 
 ```bash
 cd code
-uv sync --all-packages   # creates .venv and installs every workspace package + dev tools
-make check               # lint + type-check + import-boundaries + tests  (the local gate)
+uv sync --all-packages --extra llama   # .venv + all packages + dev tools + local engine (llama.cpp/Metal)
+make check                             # lint + type-check + import-boundaries + tests  (the local gate)
+
+# Run things on a real local model (needs the model in models/, see below):
+uv run python tools/agent_demo.py      # a real agent solving tasks with tools
+uv run python tools/run_benchmark.py   # the 0a benchmark on the real model
 ```
 
 `uv` is the only entry point — every command runs inside the locked workspace

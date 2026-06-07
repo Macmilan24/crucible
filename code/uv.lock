@@ -166,10 +166,16 @@ version = "0.0.1"
 source = { editable = "bench/crucible-bench" }
 dependencies = [
     { name = "crucible-core" },
+    { name = "crucible-engine" },
+    { name = "crucible-grammar" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "crucible-core", editable = "packages/crucible-core" }]
+requires-dist = [
+    { name = "crucible-core", editable = "packages/crucible-core" },
+    { name = "crucible-engine", editable = "packages/crucible-engine" },
+    { name = "crucible-grammar", editable = "packages/crucible-grammar" },
+]
 
 [[package]]
 name = "crucible-core"

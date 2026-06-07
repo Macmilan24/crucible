@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"
 authors = [{ name = "Samuel Dagne" }]
-dependencies = ["crucible-core"]
+dependencies = ["crucible-core", "crucible-engine", "crucible-grammar"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/crucible_bench"]

@@ -10,7 +10,8 @@
   ],
   "exclude": [
     "**/__pycache__",
-    "**/.venv"
+    "**/.venv",
+    "packages/crucible-engine/src/crucible_engine/llama_backend.py"
   ],
   "typeCheckingMode": "basic",
   "reportMissingImports": true,

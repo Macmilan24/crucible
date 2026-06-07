@@ -12,8 +12,8 @@ install: sync ## Alias for sync (create/refresh the environment)
 lock: ## Resolve and write uv.lock
 	uv lock
 
-sync: ## Create .venv and install all workspace packages + dev tools
-	uv sync --all-packages
+sync: ## Create .venv and install all workspace packages + dev tools + the local (llama.cpp) engine
+	uv sync --all-packages --extra llama
 
 lint: ## Lint with ruff
 	uv run ruff check .

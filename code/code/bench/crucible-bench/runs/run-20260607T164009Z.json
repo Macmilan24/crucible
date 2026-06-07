@@ -1,0 +1,55 @@
+{
+  "manifest": {
+    "commit": "bb4d979",
+    "suite": "crucible-mini (tool-use + GSM-style)",
+    "model": "Qwen2.5-3B-Instruct-Q4_K_M",
+    "model_hash": "sha256:9c9f56a391a3abbd",
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "hardware": "Apple M5 / 24GB / Metal",
+    "env_lock_hash": "sha256:nolock",
+    "notes": "",
+    "extra": {}
+  },
+  "report": {
+    "malformed": {
+      "unconstrained_rate": 1.0,
+      "grammar_rate": 0.0,
+      "trials": 12
+    },
+    "compounding": {
+      "steps": 20.0,
+      "unconstrained_clean_episode": 0.0,
+      "grammar_clean_episode": 1.0
+    },
+    "token_economy": {
+      "full": {
+        "name": "full-CoT",
+        "mean_tokens": 152.5,
+        "malformed_rate": 0.0,
+        "success_rate": 1.0
+      },
+      "cod": {
+        "name": "chain-of-draft",
+        "mean_tokens": 35.666666666666664,
+        "malformed_rate": 0.0,
+        "success_rate": 1.0
+      },
+      "reduction_factor": 4.275700934579439,
+      "reduction_ci": [
+        3.43859649122807,
+        5.494601889338732
+      ],
+      "gate": {
+        "passed": true,
+        "reduction_factor": 4.275700934579439,
+        "matched_success": true,
+        "reason": "passed: 4.28x token reduction at matched success"
+      }
+    },
+    "meta": {}
+  }
+}
