@@ -1,11 +1,11 @@
-"""Real grammar-scoped emission: build a GBNF grammar for a tool call and validate
-output against it.
+"""Real grammar-scoped emission: build GBNF grammars for agent actions and validate
+output against them.
 
 GBNF is the grammar format llama.cpp consumes to constrain decoding. A tool call is
-emitted as a JSON object with exactly the declared parameters — so the model is
+emitted as a JSON object with exactly the declared parameters, so the model is
 *structurally incapable* of emitting a malformed call (wrong name, missing/extra
-args, unparseable JSON). This is the real form of the two-phase decoding invariant
-that the scaffold modelled with token sets.
+args, unparseable JSON). The action grammar additionally lets the model end the
+episode with a final answer — and that choice, too, is structurally valid.
 
 It does NOT guarantee the *values* are correct — that is the verifier's job. Grammar
 solves structure; the verifier solves truth.
@@ -16,6 +16,10 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from typing import cast
+
+# Shared GBNF rules reused by every grammar we build.
+_STRING_RULE = 'string ::= "\\"" ([^"\\\\] | "\\\\" .)* "\\""'
+_WS_RULE = "ws ::= [ \\t\\n]*"
 
 
 @dataclass(frozen=True, slots=True)
@@ -32,25 +36,36 @@ class ToolSchema:
             raise ValueError("a tool needs at least one parameter")
 
 
-def tool_call_gbnf(schema: ToolSchema) -> str:
-    """Return a GBNF grammar that admits exactly one valid JSON call to ``schema``.
-
-    Shape: {"tool": "<name>", "arguments": {"p1": "...", "p2": "...", ...}}
-    """
-    # Each argument is a JSON string value; keys and order are fixed.
+def _tool_object(schema: ToolSchema) -> str:
+    """The GBNF expression for one valid tool-call JSON object (no root/rules)."""
     arg_rules: list[str] = []
     for i, p in enumerate(schema.params):
         sep = "" if i == 0 else ' "," '
         arg_rules.append(f'{sep} "\\"{p}\\":" ws string')
     args = " ".join(arg_rules)
-
     return (
-        "root   ::= "
         f'"{{" ws "\\"tool\\":" ws "\\"{schema.name}\\"" ws "," ws '
-        f'"\\"arguments\\":" ws "{{" ws {args} ws "}}" ws "}}"\n'
-        'string ::= "\\"" ([^"\\\\] | "\\\\" .)* "\\""\n'
-        "ws     ::= [ \\t\\n]*\n"
+        f'"\\"arguments\\":" ws "{{" ws {args} ws "}}" ws "}}"'
     )
+
+
+def tool_call_gbnf(schema: ToolSchema) -> str:
+    """A grammar that admits exactly one valid JSON call to ``schema``."""
+    return f"root ::= ws {_tool_object(schema)} ws\n{_STRING_RULE}\n{_WS_RULE}\n"
+
+
+def action_gbnf(tools: list[ToolSchema], *, allow_final: bool = True) -> str:
+    """A grammar admitting EITHER a valid call to any of ``tools`` OR a final answer.
+
+    Final answer shape: {"final": "<text>"}
+    """
+    if not tools and not allow_final:
+        raise ValueError("an action grammar needs at least one tool or a final answer")
+    branches = [f"({_tool_object(t)})" for t in tools]
+    if allow_final:
+        branches.append('("{" ws "\\"final\\":" ws string ws "}")')
+    union = " | ".join(branches)
+    return f"root ::= ws ({union}) ws\n{_STRING_RULE}\n{_WS_RULE}\n"
 
 
 def is_valid_tool_call(text: str, schema: ToolSchema) -> bool:

@@ -2,9 +2,15 @@ from __future__ import annotations
 
 import pytest
 
-from crucible_grammar import ToolSchema, is_valid_tool_call, tool_call_gbnf
+from crucible_grammar import (
+    ToolSchema,
+    action_gbnf,
+    is_valid_tool_call,
+    tool_call_gbnf,
+)
 
 WEATHER = ToolSchema(name="get_weather", params=("city", "units"))
+CALC = ToolSchema(name="calculator", params=("expression",))
 
 
 def test_gbnf_mentions_name_and_params() -> None:
@@ -42,3 +48,16 @@ def test_unparseable_rejected() -> None:
 def test_schema_validation() -> None:
     with pytest.raises(ValueError, match="at least one parameter"):
         ToolSchema(name="x", params=())
+
+
+def test_action_gbnf_mentions_all_tools_and_final() -> None:
+    g = action_gbnf([WEATHER, CALC], allow_final=True)
+    assert "get_weather" in g
+    assert "calculator" in g
+    assert "final" in g
+    assert g.startswith("root")
+
+
+def test_action_gbnf_requires_something_to_emit() -> None:
+    with pytest.raises(ValueError, match="at least one tool or a final"):
+        action_gbnf([], allow_final=False)
