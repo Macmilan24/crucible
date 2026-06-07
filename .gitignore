@@ -37,5 +37,5 @@ code/models/
 *.gguf
 
 # --- benchmark/experiment artifacts (large; released separately) ---
-bench/**/runs/
+**/runs/
 *.log

@@ -63,8 +63,8 @@ def main() -> None:
         model_hash=_sha256(MODEL),
         seeds=(0, 1, 2),
         hardware="Apple M5 / 24GB / Metal",
-        env_lock_hash=_sha256(ROOT / "code" / "uv.lock")
-        if (ROOT / "code" / "uv.lock").exists()
+        env_lock_hash=_sha256(ROOT / "uv.lock")
+        if (ROOT / "uv.lock").exists()
         else "sha256:nolock",
     )
 
@@ -85,7 +85,7 @@ def main() -> None:
     print(f"    reduction      : {t.reduction_factor:.2f}x  (95% CI {lo:.2f}-{hi:.2f})")
     print(f"\n[gate] {'PASS' if t.gate.passed else 'FAIL'} - {t.gate.reason}")
 
-    runs = ROOT / "code" / "bench" / "crucible-bench" / "runs"
+    runs = ROOT / "bench" / "crucible-bench" / "runs"
     runs.mkdir(parents=True, exist_ok=True)
     stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     out = runs / f"run-{stamp}.json"
