@@ -1,0 +1,59 @@
+name: Studio Release
+
+# Build the Crucible Studio desktop app for macOS / Windows / Linux and attach the
+# installers to the GitHub Release for the tag. Runs alongside the Python wheel
+# release (release.yml) on the same `v*` tags — GitHub's runners do the Rust
+# compile, so no one needs Rust locally to ship or to use the app.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch: {}
+
+jobs:
+  studio:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest, macos-13, ubuntu-22.04, windows-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Linux build dependencies
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: studio/src-tauri
+
+      - name: Install frontend dependencies
+        working-directory: studio
+        run: npm ci
+
+      - name: Build app + attach to release
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          projectPath: studio
+          tagName: ${{ github.ref_name }}
+          releaseName: "Crucible ${{ github.ref_name }}"
+          releaseBody: "Crucible Studio desktop installers are attached below, alongside the Python wheelhouse."
+          releaseDraft: false
+          prerelease: false
