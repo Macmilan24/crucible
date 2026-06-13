@@ -1,7 +1,7 @@
 # Crucible dev tasks. Run from the code/ directory. All commands go through uv,
 # so the environment is always the locked workspace venv (never a stray global).
 .DEFAULT_GOAL := help
-.PHONY: help install lock sync lint format type imports test check clean
+.PHONY: help install lock sync lint format format-check type imports test check clean
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -21,6 +21,9 @@ lint: ## Lint with ruff
 format: ## Auto-format with ruff
 	uv run ruff format .
 
+format-check: ## Check formatting without changing files (what CI runs)
+	uv run ruff format --check .
+
 type: ## Type-check with pyright
 	uv run pyright
 
@@ -30,7 +33,7 @@ imports: ## Enforce package boundaries (import-linter)
 test: ## Run the test suite (excluding slow/model tests)
 	uv run pytest -m "not slow"
 
-check: lint type imports test ## Run the full local gate (what CI runs)
+check: lint format-check type imports test ## Run the full local gate (what CI runs)
 	@echo "All checks passed."
 
 clean: ## Remove caches and the virtualenv

@@ -28,8 +28,10 @@ def show(title: str, task: str, engine: LlamaCppEngine, registry: ToolRegistry) 
         if step.observation is not None:
             print(f"          observation = {step.observation}")
     print(f"  FINAL: {result.final}")
-    print(f"  (tool calls: {result.tool_calls}, malformed actions: {result.malformed}, "
-          f"completion tokens: {result.completion_tokens})\n")
+    print(
+        f"  (tool calls: {result.tool_calls}, malformed actions: {result.malformed}, "
+        f"completion tokens: {result.completion_tokens})\n"
+    )
 
 
 def main() -> None:
