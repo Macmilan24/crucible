@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "crucible-core"
-version = "0.0.1"
+version = "0.1.0"
 description = "Crucible Core (P1): the inference-native orchestrator / agent loop over the substrate."
 readme = "README.md"
 requires-python = ">=3.11"

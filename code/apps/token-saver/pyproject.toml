@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "crucible-token-saver"
-version = "0.0.1"
+version = "0.1.0"
 description = "0b: a drop-in token-saver that slots under an existing local agent. A true subset of Crucible Core."
 readme = "README.md"
 requires-python = ">=3.11"

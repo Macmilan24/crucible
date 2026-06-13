@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "crucible-engine"
-version = "0.0.1"
+version = "0.1.0"
 description = "The inference-native control-surface contract and SGLang integration — the orchestrator↔engine boundary (the wall)."
 readme = "README.md"
 requires-python = ">=3.11"

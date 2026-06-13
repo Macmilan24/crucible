@@ -198,7 +198,7 @@ toml = [
 
 [[package]]
 name = "crucible-atomix"
-version = "0.0.1"
+version = "0.1.0"
 source = { editable = "packages/crucible-atomix" }
 
 [[package]]
@@ -220,7 +220,7 @@ requires-dist = [
 
 [[package]]
 name = "crucible-core"
-version = "0.0.1"
+version = "0.1.0"
 source = { editable = "packages/crucible-core" }
 dependencies = [
     { name = "crucible-atomix" },
@@ -239,7 +239,7 @@ requires-dist = [
 
 [[package]]
 name = "crucible-engine"
-version = "0.0.1"
+version = "0.1.0"
 source = { editable = "packages/crucible-engine" }
 
 [package.optional-dependencies]
@@ -273,7 +273,7 @@ source = { editable = "packages/crucible-govern" }
 
 [[package]]
 name = "crucible-grammar"
-version = "0.0.1"
+version = "0.1.0"
 source = { editable = "packages/crucible-grammar" }
 dependencies = [
     { name = "crucible-engine" },
@@ -294,7 +294,7 @@ source = { editable = "packages/crucible-search" }
 
 [[package]]
 name = "crucible-server"
-version = "0.0.1"
+version = "0.1.0"
 source = { editable = "apps/server" }
 dependencies = [
     { name = "crucible-engine" },
@@ -313,7 +313,7 @@ requires-dist = [
 
 [[package]]
 name = "crucible-token-saver"
-version = "0.0.1"
+version = "0.1.0"
 source = { editable = "apps/token-saver" }
 dependencies = [
     { name = "crucible-core" },
@@ -324,7 +324,7 @@ requires-dist = [{ name = "crucible-core", editable = "packages/crucible-core" }
 
 [[package]]
 name = "crucible-tokeneconomy"
-version = "0.0.1"
+version = "0.1.0"
 source = { editable = "packages/crucible-tokeneconomy" }
 dependencies = [
     { name = "crucible-engine" },

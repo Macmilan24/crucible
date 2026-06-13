@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "crucible-server"
-version = "0.0.1"
+version = "0.1.0"
 description = "An OpenAI-compatible local server that guarantees valid tool calls (grammar-scoped emission) — point opencode/Continue/etc. at it."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -18,7 +18,8 @@ dependencies = [
 ]
 
 [project.scripts]
-crucible-server = "crucible_server.cli:main"
+crucible = "crucible_server.cli:main"
+crucible-server = "crucible_server.cli:server_main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/crucible_server"]

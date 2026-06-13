@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "crucible-grammar"
-version = "0.0.1"
+version = "0.1.0"
 description = "Trajectory grammar + two-phase emission masking: constrain emission, never cognition (zero structural hallucination)."
 readme = "README.md"
 requires-python = ">=3.11"

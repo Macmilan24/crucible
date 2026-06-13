@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "crucible-tokeneconomy"
-version = "0.0.1"
+version = "0.1.0"
 description = "The token economy: adaptive Chain-of-Draft reasoning budgets and typed KV-cache inter-agent handoffs."
 readme = "README.md"
 requires-python = ">=3.11"

@@ -4,6 +4,6 @@ from __future__ import annotations
 
 from .app import create_app, tool_schemas_from_openai
 
-__version__ = "0.0.1"
+__version__ = "0.1.0"
 
 __all__ = ["__version__", "create_app", "tool_schemas_from_openai"]
