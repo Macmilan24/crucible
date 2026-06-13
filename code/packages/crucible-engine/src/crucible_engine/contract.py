@@ -29,6 +29,21 @@ class DraftProposal:
     score: float
 
 
+@dataclass(frozen=True, slots=True)
+class Generation:
+    """The result of one generation, with real token accounting.
+
+    ``prompt_eval_tokens`` is how many prompt tokens the engine *actually processed*
+    — it drops below ``prompt_tokens`` when a shared prefix is reused from the
+    KV-cache (the inter-agent / multi-turn token saving).
+    """
+
+    text: str
+    prompt_tokens: int
+    completion_tokens: int
+    prompt_eval_tokens: int = 0
+
+
 @runtime_checkable
 class ControlSurface(Protocol):
     """The five inference-native control surfaces (Def. 3.2 / docs/02 contract table).

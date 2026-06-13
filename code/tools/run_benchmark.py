@@ -16,7 +16,7 @@ import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
 
-from crucible_bench import RunManifest, run_all
+from crucible_bench import KV_TURNS, SHARED_CONTEXT, RunManifest, run_all, run_kv_reuse
 from crucible_engine import LlamaCppEngine
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -55,6 +55,7 @@ def main() -> None:
     print("loaded. Running benchmark (this takes a couple of minutes)...\n")
 
     report = run_all(engine, seeds=(0, 1, 2))
+    report.kv_reuse = run_kv_reuse(engine, shared_context=SHARED_CONTEXT, turns=KV_TURNS)
 
     manifest = RunManifest(
         commit=_git_commit(),
@@ -63,9 +64,7 @@ def main() -> None:
         model_hash=_sha256(MODEL),
         seeds=(0, 1, 2),
         hardware="Apple M5 / 24GB / Metal",
-        env_lock_hash=_sha256(ROOT / "uv.lock")
-        if (ROOT / "uv.lock").exists()
-        else "sha256:nolock",
+        env_lock_hash=_sha256(ROOT / "uv.lock") if (ROOT / "uv.lock").exists() else "sha256:nolock",
     )
 
     m = report.malformed
@@ -83,6 +82,15 @@ def main() -> None:
     print(f"    Chain-of-Draft : {t.cod.mean_tokens:6.1f} tok, {t.cod.success_rate:.0%} correct")
     lo, hi = t.reduction_ci
     print(f"    reduction      : {t.reduction_factor:.2f}x  (95% CI {lo:.2f}-{hi:.2f})")
+    if report.kv_reuse is not None:
+        k = report.kv_reuse
+        print(
+            f"\n[4] KV-cache prefill reuse ({k.turns} turns, "
+            f"{k.shared_context_tokens}-token shared context):"
+        )
+        print(f"    no reuse  : {k.prefill_no_reuse:6d} prompt tokens processed")
+        print(f"    with reuse: {k.prefill_with_reuse:6d} prompt tokens processed")
+        print(f"    reduction : {k.reduction_factor:.2f}x fewer prefill tokens")
     print(f"\n[gate] {'PASS' if t.gate.passed else 'FAIL'} - {t.gate.reason}")
 
     runs = ROOT / "bench" / "crucible-bench" / "runs"

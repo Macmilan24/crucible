@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from .kv import KV_TURNS, SHARED_CONTEXT, KvReuseResult, run_kv_reuse
 from .manifest import RunManifest
 from .metrics import (
     PHASE0_MIN_TOKEN_REDUCTION,
@@ -27,12 +28,15 @@ from .suite import REASONING_TASKS, TOOL_TASKS, ReasoningTask, ToolTask
 __version__ = "0.0.1"
 
 __all__ = [
+    "KV_TURNS",
     "PHASE0_MIN_TOKEN_REDUCTION",
     "REASONING_TASKS",
+    "SHARED_CONTEXT",
     "TOOL_TASKS",
     "ArmResult",
     "BenchReport",
     "GateResult",
+    "KvReuseResult",
     "MalformedResult",
     "ReasoningTask",
     "RunManifest",
@@ -45,6 +49,7 @@ __all__ = [
     "mean",
     "passes_phase0_gate",
     "run_all",
+    "run_kv_reuse",
     "run_malformed",
     "run_token_economy",
     "success_is_matched",

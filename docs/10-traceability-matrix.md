@@ -11,7 +11,7 @@ Legend for **Phase**: 🟢 = in scope now (Phase 0 + P1) · 🟡 = design-only (
 | Grammar-scoped emission (two-phase) | 🟢 | `crucible-grammar` + `crucible-engine` | property: every emitted byte parses against active schema; reasoning unconstrained | RQ1 | structure snowballing → emission-only + diagnostic mode |
 | Trajectory grammar `G_traj` | 🟢 | `crucible-grammar` | property: only legal phase sequences accepted | RQ1 | — |
 | Chain-of-Draft (adaptive) | 🟢 | `crucible-tokeneconomy` | per-step budget honored; accuracy preserved on amenable steps | RQ1 | over-compression → VoI-modulated, easy steps only |
-| KV-cache inter-agent comms | 🟢 | `crucible-tokeneconomy` + `crucible-engine` | prefill-cost reduction; accuracy parity | RQ1 | — |
+| KV-cache inter-agent comms | 🟢 (Mac: prefix reuse) | `crucible-engine` (+ `crucible-bench`) | reuse cheaper + identical output (slow test); 4.94× fewer prefill tokens measured | RQ1 | full cross-agent transfer → SGLang ([ADR-0010](adr/0010-kv-cache-reuse-llamacpp.md)) |
 | Unified token+action speculation | 🟢/🟡 | `crucible-engine` | accepted speculation ≡ non-speculative output | RQ2 | speculative state corruption → Atomix |
 | Atomix transactional settlement | 🟢 | `crucible-atomix` | property: aborted txn leaves no observable effect; fault-injection success rate | RQ6 | compensation fails → reversibility classes + micro-VM snapshots |
 | Reversibility classes | 🟢 | `crucible-atomix` | irreversible actions never speculated | RQ6 | — |

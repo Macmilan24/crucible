@@ -11,8 +11,9 @@ from .contract import (
     CacheNodeId,
     ControlSurface,
     DraftProposal,
+    Generation,
 )
-from .llama_backend import Generation, LlamaCppEngine
+from .llama_backend import LlamaCppEngine
 from .mock import ROOT, MockEngine
 
 __version__ = "0.0.1"

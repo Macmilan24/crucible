@@ -20,5 +20,6 @@ An ADR captures a single architecturally-significant decision: its context, the 
 | [0007](0007-local-storage-sqlite-vector.md) | SQLite + vector index for all local stores | accepted |
 | [0008](0008-licensing-open-core.md) | Open-core licensing, private-until-launch | accepted |
 | [0009](0009-evaluation-as-product-gate.md) | Evaluation is the product gate (science = business) | accepted |
+| [0010](0010-kv-cache-reuse-llamacpp.md) | KV-cache reuse on llama.cpp (Mac): same-model prefix reuse | accepted |
 
 To add one: copy [`_template.md`](_template.md), take the next number, add a row here.

@@ -19,6 +19,7 @@ from typing import Any, Protocol
 from crucible_engine import Generation
 from crucible_grammar import is_valid_tool_call, tool_call_gbnf
 
+from .kv import KvReuseResult
 from .metrics import ArmResult, GateResult, passes_phase0_gate
 from .stats import bootstrap_ci, mean
 from .suite import REASONING_TASKS, TOOL_TASKS, ReasoningTask, ToolTask
@@ -153,6 +154,7 @@ class BenchReport:
     malformed: MalformedResult
     compounding: dict[str, float]
     token_economy: TokenEconomyResult
+    kv_reuse: KvReuseResult | None = None  # set by the runner when the engine supports it
     meta: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
