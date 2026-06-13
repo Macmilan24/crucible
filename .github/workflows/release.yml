@@ -1,0 +1,62 @@
+name: Release
+
+# Tag a version to cut a release:  git tag v0.1.0 && git push origin v0.1.0
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write   # needed to create the GitHub Release
+
+defaults:
+  run:
+    working-directory: code
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Build all wheels (the wheelhouse)
+        run: uv build --all-packages --out-dir dist
+
+      - name: Assemble release assets
+        run: |
+          set -eu
+          tag="${GITHUB_REF_NAME}"
+          mkdir -p ../release
+          cp -r dist ../release/wheelhouse
+          cp ../scripts/install.sh ../release/install.sh
+          cp ../LICENSE ../release/LICENSE
+          tar -czf "../release/crucible-wheelhouse-${tag}.tar.gz" -C dist .
+          ls -la ../release
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Crucible Core ${{ github.ref_name }}"
+          generate_release_notes: true
+          body: |
+            **Crucible Core ${{ github.ref_name }}** — a token-frugal local agent runtime
+            with grammar-guaranteed tool calls (OpenAI-compatible).
+
+            ### Install (one command)
+            ```sh
+            curl -LsSf https://raw.githubusercontent.com/${{ github.repository }}/main/scripts/install.sh | sh
+            crucible download-model
+            crucible serve
+            ```
+            Then point opencode / Continue / any OpenAI client at `http://127.0.0.1:8000/v1`.
+
+            See the attached `crucible-wheelhouse-${{ github.ref_name }}.tar.gz` for an
+            offline/manual install, and the docs at https://macmilan24.github.io/crucible/.
+          files: |
+            release/crucible-wheelhouse-${{ github.ref_name }}.tar.gz
+            release/install.sh
+            release/LICENSE

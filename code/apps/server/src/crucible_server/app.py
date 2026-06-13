@@ -111,8 +111,16 @@ def create_app(engine: ChatEngine, *, model_name: str = "crucible-local") -> Fas
         temperature = float(body.get("temperature", 0.7))
         max_tokens = int(body.get("max_tokens") or 512)
         schemas = tool_schemas_from_openai(body.get("tools"))
-        grammar = action_gbnf(schemas, allow_final=True) if schemas else None
-        gen = engine.chat(messages, grammar=grammar, max_tokens=max_tokens, temperature=temperature)
+        if schemas:
+            # Structured tool emission is decoded at temperature 0: it must commit to a
+            # valid call, not wander in the grammar's optional whitespace (which a high
+            # temperature invites). This is what makes tool calls deterministic + valid.
+            grammar = action_gbnf(schemas, allow_final=True)
+            gen = engine.chat(messages, grammar=grammar, max_tokens=max_tokens, temperature=0.0)
+        else:
+            gen = engine.chat(
+                messages, grammar=None, max_tokens=max_tokens, temperature=temperature
+            )
         return _format(gen, model_name, used_tools=bool(schemas))
 
     return app
