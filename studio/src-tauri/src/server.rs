@@ -15,10 +15,30 @@ pub struct ServerState {
     child: Mutex<Option<Child>>,
 }
 
-/// Locate the `crucible` executable. GUI apps on macOS inherit a minimal PATH,
-/// so we check the common install locations explicitly before falling back to
-/// scanning PATH.
-fn find_crucible() -> Option<PathBuf> {
+/// Resolve the crucible runtime to launch.
+///
+/// 1. The **bundled sidecar** — Tauri places the frozen `crucible` binary next to
+///    the app executable (via `externalBin`), so a released app needs nothing
+///    installed. This is the one-download path.
+/// 2. Dev fallback — a `crucible` CLI on the system, for `tauri dev` builds that
+///    don't ship a sidecar. (GUI apps inherit a minimal PATH, so we check the
+///    common install locations explicitly before scanning PATH.)
+fn find_runtime() -> Option<PathBuf> {
+    // 1. Bundled sidecar alongside the app binary.
+    if let Ok(exe) = std::env::current_exe() {
+        if let Some(dir) = exe.parent() {
+            let name = if cfg!(windows) {
+                "crucible-server.exe"
+            } else {
+                "crucible-server"
+            };
+            let p = dir.join(name);
+            if p.exists() {
+                return Some(p);
+            }
+        }
+    }
+    // 2. Dev fallback: a `crucible` CLI installed on the system.
     if let Ok(home) = std::env::var("HOME") {
         let home = PathBuf::from(home);
         for rel in [".local/bin/crucible", ".cargo/bin/crucible"] {
@@ -47,7 +67,7 @@ fn find_crucible() -> Option<PathBuf> {
 
 #[tauri::command]
 pub fn crucible_available() -> bool {
-    find_crucible().is_some()
+    find_runtime().is_some()
 }
 
 #[derive(Serialize)]
@@ -71,8 +91,10 @@ pub fn start_server(
         return Err("server is already running".to_string());
     }
 
-    let crucible = find_crucible()
-        .ok_or_else(|| "Crucible CLI not found — install Crucible first (see docs).".to_string())?;
+    let crucible = find_runtime().ok_or_else(|| {
+        "Crucible runtime not found — the bundled release ships it; for a dev build, install the crucible CLI."
+            .to_string()
+    })?;
     let spec =
         crate::catalog::spec_by_id(&model_id).ok_or_else(|| "unknown model id".to_string())?;
     let model_path = crate::catalog::models_dir_path(&app).join(spec.filename);

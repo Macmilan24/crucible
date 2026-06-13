@@ -1,0 +1,4 @@
+# Frozen sidecar binaries are produced by scripts/build-sidecar.sh (or in CI),
+# not committed — they're large and platform-specific.
+*
+!.gitignore

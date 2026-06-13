@@ -1,9 +1,14 @@
 name: Studio Release
 
 # Build the Crucible Studio desktop app for macOS / Windows / Linux and attach the
-# installers to the GitHub Release for the tag. Runs alongside the Python wheel
-# release (release.yml) on the same `v*` tags — GitHub's runners do the Rust
-# compile, so no one needs Rust locally to ship or to use the app.
+# installers to the GitHub Release for the tag. On macOS/Linux it also freezes the
+# crucible runtime into a bundled sidecar, so the installer is a true one-download
+# app (no Python or Crucible Core needed). GitHub's runners do the Rust compile, so
+# no one needs Rust locally to ship or to use the app.
+#
+# NOTE: the sidecar freeze (PyInstaller + llama-cpp-python) is validated by the first
+# real tag run; it may need per-OS tuning. Windows currently ships without the sidecar
+# (it falls back to a `crucible` CLI on PATH) until a Windows freeze is added.
 on:
   push:
     tags: ["v*"]
@@ -16,7 +21,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [macos-latest, macos-13, ubuntu-22.04, windows-latest]
+        include:
+          - platform: macos-latest
+            sidecar: true
+          - platform: macos-13
+            sidecar: true
+          - platform: ubuntu-22.04
+            sidecar: true
+          - platform: windows-latest
+            sidecar: false
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
@@ -42,6 +55,18 @@ jobs:
         with:
           workspaces: studio/src-tauri
 
+      # --- Freeze the crucible runtime into a bundled sidecar (macOS / Linux) ---
+      - uses: actions/setup-python@v5
+        if: matrix.sidecar
+        with:
+          python-version: "3.11"
+      - name: Install uv
+        if: matrix.sidecar
+        uses: astral-sh/setup-uv@v5
+      - name: Build crucible sidecar
+        if: matrix.sidecar
+        run: bash studio/scripts/build-sidecar.sh
+
       - name: Install frontend dependencies
         working-directory: studio
         run: npm ci
@@ -57,3 +82,6 @@ jobs:
           releaseBody: "Crucible Studio desktop installers are attached below, alongside the Python wheelhouse."
           releaseDraft: false
           prerelease: false
+          # Bundle the sidecar on platforms that built one. Inline JSON keeps the
+          # externalBin path resolving relative to src-tauri regardless of cwd.
+          args: ${{ matrix.sidecar && '--config {"bundle":{"externalBin":["binaries/crucible-server"]}}' || '' }}
