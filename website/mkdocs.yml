@@ -1,0 +1,107 @@
+site_name: Crucible
+site_description: >-
+  A token-frugal, inference-native local agent runtime. Lift small local models to
+  frontier-grade agency with grammar-guaranteed tool calls — on your own machine.
+site_url: https://macmilan24.github.io/crucible/
+site_author: Samuel Dagne
+
+repo_url: https://github.com/Macmilan24/crucible
+repo_name: Macmilan24/crucible
+edit_uri: edit/main/website/docs/
+
+copyright: Copyright &copy; 2026 Samuel Dagne — Apache-2.0
+
+theme:
+  name: material
+  custom_dir: overrides
+  icon:
+    logo: material/fire
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: deep orange
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: black
+      accent: deep orange
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+  font:
+    text: Inter
+    code: JetBrains Mono
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.instant
+    - navigation.tracking
+    - navigation.footer
+    - toc.follow
+    - content.code.copy
+    - content.code.annotate
+    - search.suggest
+    - search.highlight
+
+nav:
+  - Home: index.md
+  - User Guide:
+      - user/index.md
+      - Install: user/install.md
+      - Quickstart: user/quickstart.md
+      - Models: user/models.md
+      - The crucible CLI: user/cli.md
+      - Connect opencode: user/opencode.md
+      - Other clients: user/clients.md
+      - FAQ: user/faq.md
+      - Troubleshooting: user/troubleshooting.md
+  - Developer Docs:
+      - dev/index.md
+      - Architecture: dev/architecture.md
+      - The three token-savers: dev/token-savers.md
+      - Grammar & two-phase decoding: dev/grammar.md
+      - The agent loop: dev/agent-loop.md
+      - Engine contract: dev/engine-contract.md
+      - Package map: dev/packages.md
+      - Benchmarks & methodology: dev/benchmarks.md
+      - Roadmap: dev/roadmap.md
+      - Contributing: dev/contributing.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - footnotes
+  - def_list
+  - toc:
+      permalink: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+extra_css:
+  - stylesheets/extra.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Macmilan24/crucible
+  generator: false

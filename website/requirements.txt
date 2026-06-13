@@ -1,0 +1,3 @@
+# Documentation site dependencies (MkDocs Material). Kept separate from the runtime
+# workspace — these are only needed to build/preview the docs.
+mkdocs-material>=9.5,<10

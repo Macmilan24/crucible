@@ -1,0 +1,190 @@
+{% extends "main.html" %}
+
+{% block content %}
+<div class="crucible-home">
+
+  <!-- ===== HERO ===== -->
+  <section class="ch-hero">
+    <div class="ch-hero__glow"></div>
+    <div class="ch-hero__inner">
+      <div class="ch-badge">Apache-2.0 · 100% local · OpenAI-compatible</div>
+      <h1 class="ch-hero__title">
+        Frontier-grade agents,<br>
+        <span class="ch-grad">on your own machine.</span>
+      </h1>
+      <p class="ch-hero__sub">
+        Crucible is an inference-native runtime that lifts <strong>small local language models</strong>
+        into reliable tool-using agents — with <strong>grammar-guaranteed tool calls</strong> and a
+        fraction of the tokens. No cloud. No API keys. Nothing leaves your laptop.
+      </p>
+      <div class="ch-cta">
+        <a class="ch-btn ch-btn--primary" href="user/quickstart/">Get started →</a>
+        <a class="ch-btn ch-btn--ghost" href="https://github.com/Macmilan24/crucible/releases">Download release</a>
+      </div>
+
+      <div class="ch-terminal" markdown="0">
+        <div class="ch-terminal__bar">
+          <span class="ch-dot ch-dot--r"></span><span class="ch-dot ch-dot--y"></span><span class="ch-dot ch-dot--g"></span>
+          <span class="ch-terminal__title">bash</span>
+        </div>
+        <pre class="ch-terminal__body"><code><span class="ch-c">$</span> curl -LsSf https://raw.githubusercontent.com/Macmilan24/crucible/main/scripts/install.sh | sh
+<span class="ch-c">$</span> crucible download-model        <span class="ch-comment"># ~1.9 GB, resumable</span>
+<span class="ch-c">$</span> crucible serve                 <span class="ch-comment"># OpenAI API on :8000</span>
+
+<span class="ch-ok">Crucible server on http://127.0.0.1:8000  (model: crucible-local)</span>
+<span class="ch-dim">Point opencode / Continue / any OpenAI client at this base URL.</span>
+<span class="ch-dim">Tool calls come back grammar-valid — by construction.</span></code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== THE WALL ===== -->
+  <section class="ch-band">
+    <div class="ch-band__inner">
+      <p class="ch-eyebrow">The thesis</p>
+      <p class="ch-band__text">
+        Today's agents reach the model only through a stateless text API — discarding the
+        KV-cache, the logits, the draft proposals, the verifier scores. The gap that matters for
+        local agents is <em>architectural, not parameters.</em> Crucible runs the agent loop
+        <strong>below that wall</strong> and uses those control surfaces directly.
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== THREE TOKEN-SAVERS ===== -->
+  <section class="ch-section">
+    <p class="ch-eyebrow ch-center">What ships today — Product 1: Crucible Core</p>
+    <h2 class="ch-h2 ch-center">Three token-savers. Real measurements.</h2>
+    <div class="ch-cards">
+
+      <div class="ch-card">
+        <div class="ch-card__metric">0%</div>
+        <div class="ch-card__unit">malformed tool calls</div>
+        <h3 class="ch-card__title">Grammar-scoped emission</h3>
+        <p class="ch-card__body">
+          The model emits actions under a GBNF grammar, so a tool call is
+          <em>structurally incapable</em> of being malformed. Unconstrained decoding produced
+          <strong>100%</strong> malformed calls on the same suite; Crucible produces
+          <strong>0%</strong>.
+        </p>
+      </div>
+
+      <div class="ch-card ch-card--accent">
+        <div class="ch-card__metric">4.28&times;</div>
+        <div class="ch-card__unit">fewer tokens, same answers</div>
+        <h3 class="ch-card__title">Chain-of-Draft reasoning</h3>
+        <p class="ch-card__body">
+          A reasoning dial trades verbose chain-of-thought for terse drafts on easy steps:
+          <strong>152.5 → 35.7</strong> mean completion tokens at matched
+          <strong>100%</strong> success (95% CI 3.4–5.5×).
+        </p>
+      </div>
+
+      <div class="ch-card">
+        <div class="ch-card__metric">4.94&times;</div>
+        <div class="ch-card__unit">less prefill compute</div>
+        <h3 class="ch-card__title">KV-cache reuse</h3>
+        <p class="ch-card__body">
+          A shared context is encoded once and reused across turns instead of re-read every time:
+          <strong>20,263 → 4,099</strong> prefill tokens over 5 turns on a 4,050-token context —
+          with byte-identical output.
+        </p>
+      </div>
+
+    </div>
+    <p class="ch-fineprint ch-center">
+      Measured on Apple M-series · Qwen2.5-3B-Instruct Q4_K_M · <code>crucible-mini</code> suite, seeds 0/1/2.
+      Reproduce with <code>crucible</code>'s benchmark harness — see
+      <a href="dev/benchmarks/">Benchmarks &amp; methodology</a>.
+    </p>
+  </section>
+
+  <!-- ===== HOW IT WORKS ===== -->
+  <section class="ch-section ch-section--alt">
+    <h2 class="ch-h2 ch-center">One episode, three phases</h2>
+    <div class="ch-flow">
+      <div class="ch-flow__step">
+        <div class="ch-flow__n">1</div>
+        <h3>THINK</h3>
+        <p>Free, unconstrained cognition. The model reasons in plain text — no grammar, full creativity.</p>
+      </div>
+      <div class="ch-flow__arrow">→</div>
+      <div class="ch-flow__step">
+        <div class="ch-flow__n">2</div>
+        <h3>EMIT</h3>
+        <p>Grammar-locked action. A valid tool call or a final answer — structurally guaranteed, decoded deterministically.</p>
+      </div>
+      <div class="ch-flow__arrow">→</div>
+      <div class="ch-flow__step">
+        <div class="ch-flow__n">3</div>
+        <h3>SETTLE</h3>
+        <p>Atomic effects. Tool calls settle transactionally; a failure aborts cleanly and is fed back for recovery.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== DROP-IN ===== -->
+  <section class="ch-section">
+    <div class="ch-split">
+      <div class="ch-split__text">
+        <p class="ch-eyebrow">Drop-in</p>
+        <h2 class="ch-h2">Already speaks OpenAI.</h2>
+        <p class="ch-lead">
+          Crucible serves the OpenAI Chat Completions API. Point
+          <strong>opencode</strong>, <strong>Continue</strong>, <strong>Cursor</strong>, or the
+          <code>openai</code> SDK at it and change nothing else — every tool call routed through
+          Crucible comes back valid.
+        </p>
+        <a class="ch-btn ch-btn--primary" href="user/opencode/">Connect opencode →</a>
+      </div>
+      <div class="ch-terminal" markdown="0">
+        <div class="ch-terminal__bar">
+          <span class="ch-dot ch-dot--r"></span><span class="ch-dot ch-dot--y"></span><span class="ch-dot ch-dot--g"></span>
+          <span class="ch-terminal__title">response · /v1/chat/completions</span>
+        </div>
+        <pre class="ch-terminal__body"><code>{
+  <span class="ch-key">"finish_reason"</span>: <span class="ch-str">"tool_calls"</span>,
+  <span class="ch-key">"tool_calls"</span>: [{
+    <span class="ch-key">"function"</span>: {
+      <span class="ch-key">"name"</span>: <span class="ch-str">"create_event"</span>,
+      <span class="ch-key">"arguments"</span>: <span class="ch-str">"{\"title\":\"Q3 Review\",</span>
+                    <span class="ch-str">\"date\":\"2026-07-01\",</span>
+                    <span class="ch-str">\"time\":\"14:00\",</span>
+                    <span class="ch-str">\"location\":\"Room B\"}"</span>
+    }
+  }]
+}</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FINAL CTA ===== -->
+  <section class="ch-final">
+    <div class="ch-final__inner">
+      <h2 class="ch-h2">Run a real agent locally in two minutes.</h2>
+      <p class="ch-lead ch-center">Free and open source. Apache-2.0.</p>
+      <div class="ch-cta ch-center">
+        <a class="ch-btn ch-btn--primary" href="user/install/">Install Crucible →</a>
+        <a class="ch-btn ch-btn--ghost" href="dev/architecture/">Read the architecture</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="ch-foot">
+    <div class="ch-foot__inner">
+      <div>
+        <strong>Crucible</strong> — an inference-native, self-improving, privacy-preserving runtime
+        for small local model agents.
+      </div>
+      <div class="ch-foot__links">
+        <a href="https://github.com/Macmilan24/crucible">GitHub</a>
+        <a href="user/install/">Install</a>
+        <a href="dev/">Developer docs</a>
+        <a href="https://github.com/Macmilan24/crucible/releases">Releases</a>
+      </div>
+      <div class="ch-foot__fine">© 2026 Samuel Dagne · Apache-2.0</div>
+    </div>
+  </footer>
+
+</div>
+{% endblock %}
