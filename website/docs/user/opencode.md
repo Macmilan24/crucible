@@ -4,6 +4,13 @@
 **OpenAI Chat Completions API**, opencode can use your local model as a provider — and
 every tool call opencode makes comes back grammar-valid.
 
+!!! info "This replaces opencode's cloud model — it doesn't proxy it"
+    You're adding Crucible as a **new local provider** and selecting it instead of
+    Claude/GPT. Requests then run on the model on *your* machine, not a cloud API, so there's
+    no per-token bill and nothing leaves your laptop. Crucible can't reduce a cloud model's
+    token use — its core savings (logit-level grammar masking, KV-cache reuse) only exist
+    when it owns the inference. See [Why local?](faq.md) for the full reasoning.
+
 ## 1. Start Crucible
 
 ```sh

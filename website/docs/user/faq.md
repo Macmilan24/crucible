@@ -10,6 +10,27 @@ Yes. The model runs on your machine via `llama.cpp`. The server binds to `127.0.
 default. There are no API keys, no telemetry, and nothing is sent anywhere. The only
 network call is the one-time model download (a plain HTTPS GET you can audit).
 
+**Why does it need a local model? Can't it just shrink my OpenAI / Claude bill?**
+No — and this is the most important thing to understand about Crucible. It does **not** sit
+in front of a cloud model as a proxy. It **replaces** the cloud model with a local one.
+Two of the three token-savers physically *require* access to the model's internals that no
+cloud API exposes: grammar-scoped emission masks the **logits** at every decode step, and
+KV-cache reuse reuses the model's **attention memory** across turns. OpenAI and Anthropic
+give you text-in/text-out only — you never touch the logits or the KV-cache. That boundary
+is the project's whole thesis (["the wall"](../dev/architecture.md)). The deep savings only
+exist *below* it, which means owning the inference — i.e. a local (or self-hosted) model.
+(Chain-of-Draft, the third saver, is just a prompting style and *would* work against a cloud
+API — but on its own that's a thin trick, not the product.)
+
+**So if it's local, what do the "token savings" actually save me?**
+A local model isn't billed per token, so the win is **not** a smaller API invoice — it's
+**speed, compute, context, and privacy**: fewer tokens to prefill and generate means faster
+replies on your hardware, less GPU/battery per request, and more room in a fixed context
+window. If you *self-host at scale* (your own GPUs serving many users), the same token
+savings become real infrastructure-dollar savings — more requests per GPU. If your goal is
+specifically "make my cloud bill smaller," Crucible isn't that tool; if it's "own a fast,
+private, reliable local agent," it is.
+
 **Do I need a GPU?**
 No, but it helps. On Apple Silicon, `llama.cpp` uses the Metal GPU automatically. On Linux
 it runs on CPU (or CUDA if you build `llama-cpp-python` for it).

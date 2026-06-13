@@ -1,58 +1,118 @@
-# Crucible
+<div align="center">
 
-**An inference-native, self-improving, privacy-preserving runtime that lifts small local language models (7–9B) to frontier-grade agency on a user's own distribution of work.**
+# 🔥 Crucible
 
-> The gap that matters for local agents is mostly **architectural, not parameters**. Today's agents reach the model only through a stateless text API — discarding the KV-cache, logits, draft proposals, verifier scores, and the ability to change the model. Crucible co-locates the agent loop *below that wall* and uses those control surfaces.
+**A token-frugal local agent runtime — frontier-grade agents on your own machine.**
 
-This repository is the home of the Crucible system. It is currently at the **pre-implementation stage**: the research is complete (see [`paper/`](paper/)) and we are building the engineering foundation before writing runtime code.
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Docs](https://img.shields.io/badge/docs-macmilan24.github.io%2Fcrucible-ff5a1f.svg)](https://macmilan24.github.io/crucible/)
+[![Release](https://img.shields.io/badge/release-v0.1.0-success.svg)](https://github.com/Macmilan24/crucible/releases)
+
+[Documentation](https://macmilan24.github.io/crucible/) ·
+[Quickstart](https://macmilan24.github.io/crucible/user/quickstart/) ·
+[Download](https://github.com/Macmilan24/crucible/releases) ·
+[Architecture](https://macmilan24.github.io/crucible/dev/architecture/)
+
+</div>
 
 ---
 
-## Status
+Crucible lifts a **small local language model** into a reliable, tool-using agent and serves
+it behind the **OpenAI Chat Completions API** — so opencode, Continue, Cursor, or the
+`openai` SDK work against it unchanged, and every tool call comes back **grammar-valid by
+construction**.
 
-| | |
-|---|---|
-| **Phase** | Foundation complete; **monorepo scaffolded** — building Phase 0 + P1 |
-| **First build target** | Phase 0 wedge (benchmark + token-saver + calculator) → **Product 1: Crucible Core** |
-| **Code** | [`code/`](code/) — a single `uv` workspace (kept out of `paper/` and `docs/`). Gate is green: lint + types + import-boundaries + 43 tests. |
-| **Repo model** | Private monorepo now → extract spin-out libraries to their own repos later |
-| **Primary stack** | Python 3.11+, SGLang (RadixAttention / XGrammar-2 / EAGLE-3), veRL, BitNet.cpp, SQLite + vector index |
+> The gap that matters for local agents is **architectural, not parameters**. Today's agents
+> reach the model only through a stateless text API — discarding the KV-cache, the logits,
+> the draft proposals, the verifier scores. Crucible runs the agent loop *below that wall*
+> and uses those control surfaces directly.
 
-## Build it
+### What it is — and what it isn't
 
-```bash
-cd code
-uv sync --all-packages   # creates .venv, installs every workspace package + dev tools
-make check               # lint + type-check + import-boundaries + tests
+Crucible **runs the model itself, locally**. It is **not** a proxy that shrinks your
+OpenAI/Claude bill — two of its three token-savers (logit-level grammar masking and KV-cache
+reuse) physically require access to model internals that no cloud API exposes. The payoff of
+running local isn't a smaller API invoice; it's **speed, compute, privacy, and reliability**:
+fewer tokens to prefill and generate, nothing leaving your machine, and tool calls that
+*can't* be malformed. (Self-host at scale and those token savings become real
+throughput-per-GPU savings.) See [Why local?](https://macmilan24.github.io/crucible/user/faq/).
+
+## Quickstart
+
+```sh
+curl -LsSf https://raw.githubusercontent.com/Macmilan24/crucible/main/scripts/install.sh | sh
+crucible download-model        # Qwen2.5-3B-Instruct Q4_K_M, ~1.9 GB, resumable
+crucible serve                 # OpenAI-compatible server on http://127.0.0.1:8000/v1
 ```
 
-See [`code/README.md`](code/README.md) for the workspace layout and conventions.
+Then call it like OpenAI:
 
-## The documents
+```sh
+curl http://127.0.0.1:8000/v1/chat/completions -H 'Content-Type: application/json' -d '{
+  "model": "crucible-local",
+  "messages": [{"role": "user", "content": "Book a 2pm meeting in Room B"}],
+  "tools": [{"type": "function", "function": {"name": "create_event",
+    "parameters": {"type": "object",
+      "properties": {"title": {"type":"string"}, "date": {"type":"string"},
+                     "time": {"type":"string"}, "location": {"type":"string"}},
+      "required": ["title","date","time","location"]}}}]
+}'
+# → finish_reason: "tool_calls", a structurally valid create_event call.
+```
 
-Read in this order:
+Full walkthrough and client configs (opencode, Continue, Cursor): **[Quickstart →](https://macmilan24.github.io/crucible/user/quickstart/)**
 
-1. **[Vision & Scope](docs/00-vision-and-scope.md)** — the wager, what we ship first, success and kill criteria, non-goals.
-2. **[Glossary](docs/01-glossary.md)** — every acronym and mechanism (EaTS, FEaTS, VGSS, VoI, STC, ROSE, SGC, ACE, PANDO, the wall …).
-3. **[Architecture](docs/02-architecture.md)** — the six layers, the API-boundary wall, the control-surface contract, the risk ledger.
-4. **[Repo & Modularization](docs/03-repo-and-modularization.md)** — monorepo layout designed for clean extraction into spin-out repos.
-5. **[Tech Stack](docs/04-tech-stack.md)** — what we use and why, mapped to the architecture.
-6. **[Evaluation Plan](docs/05-evaluation-plan.md)** — research questions, baselines, suites, metrics, statistics, and the kill-criteria that double as product gates.
-7. **[Roadmap](docs/06-roadmap.md)** — the portfolio ladder and the sequencing, each climb gated by evidence.
-8. **[Risk Register](docs/07-risk-register.md)** — technical risks, the treatise's standing assumptions, and threats to validity.
-9. **[Security & Threat Model](docs/08-security-threat-model.md)** — trust zones, sandboxing, and the self-improvement attack surface.
-10. **[Engineering Standards](docs/09-engineering-standards.md)** — language, testing, reproducibility, CI/CD plan, branching, versioning.
-11. **[Traceability Matrix](docs/10-traceability-matrix.md)** — every mechanism and theorem mapped to a module, a test, and an evaluation question. *This is the "don't miss anything" sheet.*
+## What ships today — Product 1: Crucible Core
 
-Architecture Decision Records live in **[`docs/adr/`](docs/adr/)**.
-Product requirement docs live in **[`docs/product/`](docs/product/)**.
+Three token-savers, an agent loop, transactional settlement, and the OpenAI-compatible
+server. The headline numbers are **measured, not estimated** — reproduce them with the
+bundled harness.
+
+| Mechanism | Result | Measure |
+|---|---|---|
+| **Grammar-scoped emission** | **100% → 0%** malformed tool calls | unconstrained vs grammar, same suite |
+| **Chain-of-Draft reasoning** | **4.28×** fewer tokens at matched 100% success | 152.5 → 35.7 mean completion tokens (95% CI 3.4–5.5×) |
+| **KV-cache reuse** | **4.94×** less prefill, byte-identical output | 20,263 → 4,099 prefill tokens over 5 turns / 4,050-token context |
+
+<sub>Measured on Apple M-series (Metal) · Qwen2.5-3B-Instruct Q4_K_M · `crucible-mini` suite · seeds 0/1/2 · commit `234859e`. Your numbers will vary with model, quant, seeds, and hardware — re-run the harness for your own manifest.</sub>
+
+## Install options
+
+| Method | Command |
+|---|---|
+| **One-liner** | `curl -LsSf https://raw.githubusercontent.com/Macmilan24/crucible/main/scripts/install.sh \| sh` |
+| **From a release** | Download `crucible-wheelhouse-*.tar.gz` from [Releases](https://github.com/Macmilan24/crucible/releases), then `uv tool install --find-links <dir> --with llama-cpp-python crucible-server` |
+| **From source** | `git clone … && cd crucible/code && uv sync --all-packages --extra llama` |
+
+Details, prerequisites, and `crucible doctor`: **[Install →](https://macmilan24.github.io/crucible/user/install/)**
+
+## Build from source
+
+```sh
+cd code
+uv sync --all-packages --extra llama   # .venv + every package + dev tools + the llama.cpp engine
+make check                             # lint + format + types + import-boundaries + tests
+```
+
+The fast gate runs on `MockEngine` — no model, no GPU. Model-backed runs are marked `slow`.
+See [`code/README.md`](code/README.md) for workspace layout and conventions.
+
+## Roadmap
+
+**Product 1 (Crucible Core) is real and shipping today.** The later rungs are scaffolded
+(interfaces + package boundaries in place) and built in sequence, each gated by evidence:
+process **Verify** (P2), **Search** (P3), **Memory** (P4), self-**Evolve** (P5–6),
+**Govern** (P7), **Federation** (P8). See the
+[roadmap](https://macmilan24.github.io/crucible/dev/roadmap/).
 
 ## The research
 
-- [`paper/Cruciable_book.pdf`](paper/) — the research-book edition (architecture, theory, engineering).
-- [`paper/Cruciable_v2.pdf`](paper/) — the structured treatise edition (same content).
-- [`paper/An_Inference_Native...pdf`](paper/) — the product portfolio & go-to-market strategy.
+- [`paper/`](paper/) — the research-book edition, the structured treatise, and the product
+  portfolio / go-to-market strategy.
+- [`docs/`](docs/) — the engineering record: vision & scope, architecture, evaluation plan,
+  ADRs, and the traceability matrix.
 
-## Author
+## License & author
 
-Samuel Dagne — Independent Researcher.
+Apache-2.0 © 2026 **Samuel Dagne** — Independent Researcher.
