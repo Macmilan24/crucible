@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-crucible-bg text-zinc-200 font-sans antialiased;
+  margin: 0;
+}
+
+/* Quiet, on-brand scrollbars. */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-crucible-border rounded-full;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}

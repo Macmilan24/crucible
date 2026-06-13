@@ -1,0 +1,25 @@
+[package]
+name = "crucible-studio"
+version = "0.1.0"
+description = "Crucible Studio — a desktop control room for local LLM agents"
+authors = ["Samuel Dagne"]
+edition = "2021"
+license = "Apache-2.0"
+
+# The app logic lives in a library so the same code can target desktop (and,
+# later, mobile). `main.rs` is a thin shim that calls into it.
+[lib]
+name = "crucible_studio_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sysinfo = "0.32"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "stream"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "fs", "io-util"] }
+futures-util = "0.3"
