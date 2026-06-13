@@ -18,6 +18,10 @@ make check                             # lint + type-check + import-boundaries +
 # Run things on a real local model (needs the model in models/, see below):
 uv run python tools/agent_demo.py      # a real agent solving tasks with tools
 uv run python tools/run_benchmark.py   # the 0a benchmark on the real model
+
+# Serve an OpenAI-compatible endpoint (point opencode/Continue/etc. at it):
+uv run crucible-server --model models/Qwen2.5-3B-Instruct-Q4_K_M.gguf --port 8000
+# -> base URL http://127.0.0.1:8000/v1 ; tool calls come back grammar-valid. See apps/server/README.md
 ```
 
 `uv` is the only entry point — every command runs inside the locked workspace

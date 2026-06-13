@@ -1,0 +1,24 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "crucible-server"
+version = "0.0.1"
+description = "An OpenAI-compatible local server that guarantees valid tool calls (grammar-scoped emission) — point opencode/Continue/etc. at it."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+authors = [{ name = "Samuel Dagne" }]
+dependencies = [
+    "crucible-engine",
+    "crucible-grammar",
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+]
+
+[project.scripts]
+crucible-server = "crucible_server.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/crucible_server"]

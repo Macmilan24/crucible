@@ -17,6 +17,7 @@ package = false  # the root is a virtual anchor, never built/installed
 members = [
     "packages/*",
     "apps/token-saver",
+    "apps/server",
     "bench/*",
 ]
 # apps/calculator is intentionally NOT a member: it is a web front-end whose
@@ -38,6 +39,7 @@ crucible-govern        = { workspace = true }
 crucible-federation    = { workspace = true }
 crucible-bench         = { workspace = true }
 crucible-token-saver   = { workspace = true }
+crucible-server        = { workspace = true }
 
 # --- dev toolchain (installed by `uv sync` via the default dev group) --------
 [dependency-groups]
@@ -49,6 +51,7 @@ dev = [
     "hypothesis>=6.100",
     "import-linter>=2.0",
     "pre-commit>=3.7",
+    "httpx>=0.27",
 ]
 
 # --- ruff (lint + format) ---------------------------------------------------
