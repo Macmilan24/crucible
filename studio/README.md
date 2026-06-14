@@ -2,18 +2,31 @@
 
 A desktop control room for local LLM agents — the friendly face on top of
 [Crucible Core](../). It detects your hardware, recommends and downloads a model
-that fits, and runs the **OpenAI-compatible `crucible serve`** server with one
-click, so opencode / Continue / Cursor / the `openai` SDK can point at it.
+that fits, runs the **OpenAI-compatible `crucible serve`** server with one click
+(so opencode / Continue / the `openai` SDK can point at it), and lets you chat
+with the model right inside the app.
 
 > Studio does **not** run inference itself. It reuses Product 1: the Python
 > runtime (engine + grammar + server) is the brain; this Tauri app is the face.
 > The native parts — hardware detection, model downloads, supervising the
 > server — are Rust.
 
-**v1 (this milestone): the model manager.** Hardware detection, model
-recommendations, downloads with progress, and start/stop server control. A chat
-panel that shows guaranteed-valid tool calls and live token savings is the next
-milestone.
+**A five-page desktop app** (light by default, dark optional):
+
+- **Chat** — talk to your local model. Requests are proxied through Rust to the
+  local server (so they never leave the machine), with live session telemetry:
+  real token counts, latency, and request count.
+- **Models** — search, recommend, download (with progress), run, and delete
+  curated GGUF models.
+- **Server** — start/stop, live status with real uptime and the served model,
+  the API endpoint to copy, and ready-made configs for opencode / Continue / an
+  OpenAI SDK.
+- **Hardware** — real CPU / GPU / RAM with a live memory meter and a capacity
+  verdict computed from your machine.
+- **Settings** — theme, default port, models directory, and start-on-launch.
+
+The design system is "stark-ink" technical minimalism: Geist + Geist Mono, a
+single ember accent, hairline borders, and a centered document layout.
 
 ## Prerequisites
 
@@ -93,15 +106,23 @@ macOS and Linux automatically on a `v*` tag.
 
 ```
 studio/
-├── src/                 # React + Tailwind frontend
-│   ├── lib/api.ts       # typed wrappers over the Tauri command bridge
-│   └── components/       # SystemPanel, ModelCatalog, ServerControl, ui/*
-├── src-tauri/           # Rust backend
+├── src/                  # React + Tailwind frontend
+│   ├── pages/            # Chat, Models, Server, Hardware, Settings
+│   ├── components/
+│   │   ├── layout/       # Sidebar, TopBar, Layout, Page (one unified shell)
+│   │   └── ui/           # Glyph, Icon, Button, controls
+│   ├── state/            # StudioContext — shared app state + polling
+│   ├── lib/api.ts        # typed wrappers over the Tauri command bridge
+│   ├── lib/settings.ts   # persisted prefs (theme, port, autostart)
+│   └── index.css         # design tokens as CSS vars (light + dark)
+├── src-tauri/            # Rust backend
 │   └── src/
-│       ├── system.rs    # hardware introspection
-│       ├── catalog.rs   # model catalog + recommendation
-│       ├── download.rs  # streaming GGUF download + progress events
-│       └── server.rs    # start/stop/inspect `crucible serve`
+│       ├── system.rs     # hardware introspection
+│       ├── catalog.rs    # model catalog + recommendation
+│       ├── download.rs   # streaming GGUF download + progress events
+│       ├── server.rs     # start/stop/inspect `crucible serve`
+│       ├── chat.rs       # CORS-free proxy to the local chat endpoint
+│       └── open.rs       # open a path/URL with the OS handler
 └── scripts/gen-icons.mjs
 ```
 

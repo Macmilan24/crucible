@@ -34,6 +34,9 @@ export interface ServerStatus {
   running: boolean;
   port: number;
   base_url: string;
+  model_id: string | null;
+  model_label: string | null;
+  uptime_secs: number;
 }
 
 export interface DownloadProgress {
@@ -43,6 +46,19 @@ export interface DownloadProgress {
   pct: number;
   done: boolean;
   error: string | null;
+}
+
+export interface ChatMessage {
+  role: "system" | "user" | "assistant";
+  content: string;
+}
+
+export interface ChatReply {
+  content: string;
+  prompt_tokens: number;
+  completion_tokens: number;
+  total_tokens: number;
+  latency_ms: number;
 }
 
 export const getSystemInfo = () => invoke<SystemInfo>("get_system_info");
@@ -56,6 +72,11 @@ export const startServer = (modelId: string, port?: number) =>
   invoke<string>("start_server", { modelId, port: port ?? null });
 export const stopServer = () => invoke<void>("stop_server");
 export const serverStatus = () => invoke<ServerStatus>("server_status");
+
+export const chatCompletion = (port: number, model: string | null, messages: ChatMessage[]) =>
+  invoke<ChatReply>("chat_completion", { port, model, messages });
+
+export const openExternal = (target: string) => invoke<void>("open_external", { target });
 
 export const onDownloadProgress = (cb: (p: DownloadProgress) => void) =>
   listen<DownloadProgress>("download-progress", (e) => cb(e.payload));

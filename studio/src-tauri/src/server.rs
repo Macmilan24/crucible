@@ -1,18 +1,28 @@
 //! Start / stop / inspect the `crucible serve` OpenAI-compatible server.
 //!
 //! Studio does not run inference itself — it supervises the Python runtime that
-//! Product 1 already ships. v1 drives the user's installed `crucible` CLI; a
-//! bundled sidecar can replace that later without changing this interface.
+//! Product 1 already ships. A released app drives a bundled sidecar; a `tauri dev`
+//! build falls back to the user's installed `crucible` CLI.
 
 use serde::Serialize;
 use std::path::PathBuf;
 use std::process::{Child, Command, Stdio};
 use std::sync::Mutex;
+use std::time::Instant;
 use tauri::{AppHandle, State};
+
+/// A live server process plus the facts the UI wants to show about it.
+struct Running {
+    child: Child,
+    model_id: String,
+    model_label: String,
+    port: u16,
+    started_at: Instant,
+}
 
 #[derive(Default)]
 pub struct ServerState {
-    child: Mutex<Option<Child>>,
+    inner: Mutex<Option<Running>>,
 }
 
 /// Resolve the crucible runtime to launch.
@@ -75,6 +85,12 @@ pub struct ServerStatus {
     pub running: bool,
     pub port: u16,
     pub base_url: String,
+    /// Id of the model the server was started with (matches the catalog), if running.
+    pub model_id: Option<String>,
+    /// Human-readable model name, if running.
+    pub model_label: Option<String>,
+    /// Seconds since the server started, if running.
+    pub uptime_secs: u64,
 }
 
 const DEFAULT_PORT: u16 = 8000;
@@ -86,7 +102,7 @@ pub fn start_server(
     model_id: String,
     port: Option<u16>,
 ) -> Result<String, String> {
-    let mut guard = state.child.lock().map_err(|e| e.to_string())?;
+    let mut guard = state.inner.lock().map_err(|e| e.to_string())?;
     if guard.is_some() {
         return Err("server is already running".to_string());
     }
@@ -116,44 +132,63 @@ pub fn start_server(
         .spawn()
         .map_err(|e| format!("failed to launch crucible: {e}"))?;
 
-    *guard = Some(child);
-    Ok(format!("http://127.0.0.1:{port}/v1"))
+    *guard = Some(Running {
+        child,
+        model_id: spec.id.to_string(),
+        model_label: spec.name.to_string(),
+        port,
+        started_at: Instant::now(),
+    });
+    Ok(base_url(port))
 }
 
 #[tauri::command]
 pub fn stop_server(state: State<'_, ServerState>) -> Result<(), String> {
-    let mut guard = state.child.lock().map_err(|e| e.to_string())?;
-    if let Some(mut child) = guard.take() {
-        let _ = child.kill();
-        let _ = child.wait();
+    let mut guard = state.inner.lock().map_err(|e| e.to_string())?;
+    if let Some(mut running) = guard.take() {
+        let _ = running.child.kill();
+        let _ = running.child.wait();
     }
     Ok(())
 }
 
 #[tauri::command]
 pub fn server_status(state: State<'_, ServerState>) -> ServerStatus {
-    let mut guard = match state.child.lock() {
+    let mut guard = match state.inner.lock() {
         Ok(g) => g,
-        Err(_) => {
-            return ServerStatus {
-                running: false,
-                port: DEFAULT_PORT,
-                base_url: base_url(DEFAULT_PORT),
-            }
-        }
+        Err(_) => return stopped_status(DEFAULT_PORT),
     };
+
     // A process that has exited on its own should no longer count as running.
-    let running = match guard.as_mut() {
-        Some(child) => matches!(child.try_wait(), Ok(None)),
+    let still_running = match guard.as_mut() {
+        Some(r) => matches!(r.child.try_wait(), Ok(None)),
         None => false,
     };
-    if !running {
+
+    if !still_running {
         *guard = None;
+        return stopped_status(DEFAULT_PORT);
     }
+
+    let r = guard.as_ref().expect("checked running");
     ServerStatus {
-        running,
-        port: DEFAULT_PORT,
-        base_url: base_url(DEFAULT_PORT),
+        running: true,
+        port: r.port,
+        base_url: base_url(r.port),
+        model_id: Some(r.model_id.clone()),
+        model_label: Some(r.model_label.clone()),
+        uptime_secs: r.started_at.elapsed().as_secs(),
+    }
+}
+
+fn stopped_status(port: u16) -> ServerStatus {
+    ServerStatus {
+        running: false,
+        port,
+        base_url: base_url(port),
+        model_id: None,
+        model_label: None,
+        uptime_secs: 0,
     }
 }
 

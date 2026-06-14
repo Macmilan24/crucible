@@ -6,7 +6,9 @@
 //! Python runtime — this is the *face*, not a second engine.
 
 mod catalog;
+mod chat;
 mod download;
+mod open;
 mod server;
 mod system;
 
@@ -27,6 +29,8 @@ pub fn run() {
             server::start_server,
             server::stop_server,
             server::server_status,
+            chat::chat_completion,
+            open::open_external,
         ])
         .run(tauri::generate_context!())
         .expect("error while running Crucible Studio");

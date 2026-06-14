@@ -2,7 +2,90 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ------------------------------------------------------------------ *
+ *  Design tokens as RGB channels. Light is the default; `.dark` on the
+ *  <html> element flips the whole app. Channels (not hex) so Tailwind's
+ *  opacity modifiers — bg-ember-start/10 — keep working.
+ * ------------------------------------------------------------------ */
 :root {
+  --ink: 23 23 23; /* #171717 */
+  --canvas: 255 255 255; /* #ffffff */
+  --canvas-inset: 245 245 245; /* #f5f5f5 */
+  --background: 249 249 249; /* #f9f9f9 */
+  --surface: 249 249 249;
+  --surface-bright: 249 249 249;
+  --surface-dim: 218 218 218; /* #dadada */
+  --surface-container-lowest: 255 255 255;
+  --surface-container-low: 243 243 243; /* #f3f3f3 */
+  --surface-container: 238 238 238; /* #eeeeee */
+  --surface-container-high: 232 232 232; /* #e8e8e8 */
+  --surface-container-highest: 226 226 226; /* #e2e2e2 */
+  --surface-variant: 226 226 226;
+  --surface-tint: 95 94 94; /* #5f5e5e */
+  --hairline: 235 235 235; /* #ebebeb */
+  --hairline-strong: 161 161 161; /* #a1a1a1 */
+  --body-text: 77 77 77; /* #4d4d4d */
+  --mute-text: 136 136 136; /* #888888 */
+  --on-surface: 26 28 28; /* #1a1c1c */
+  --on-surface-variant: 68 71 72; /* #444748 */
+  --outline: 116 120 120; /* #747878 */
+  --outline-variant: 196 199 199; /* #c4c7c7 */
+  --primary: 0 0 0; /* #000000 */
+  --on-primary: 255 255 255;
+  --secondary: 183 20 34; /* #b71422 */
+  --secondary-container: 219 50 55; /* #db3237 */
+  --tertiary-container: 207 167 0; /* #cfa700 */
+  --error: 186 26 26; /* #ba1a1a */
+  --on-error: 255 255 255;
+  --error-container: 255 218 214; /* #ffdad6 */
+  --on-error-container: 147 0 10; /* #93000a */
+  --ember-start: 255 77 77; /* #ff4d4d */
+  --ember-end: 249 203 40; /* #f9cb28 */
+  --ok: 5 150 105; /* emerald-600 */
+  --ok-soft: 209 250 229; /* emerald-100 */
+  --warn: 217 119 6; /* amber-600 */
+
+  color-scheme: light;
+}
+
+.dark {
+  --ink: 237 237 237;
+  --canvas: 15 15 17; /* #0f0f11 */
+  --canvas-inset: 24 24 27; /* #18181b */
+  --background: 11 11 14; /* #0b0b0e */
+  --surface: 11 11 14;
+  --surface-bright: 18 18 22;
+  --surface-dim: 39 39 42;
+  --surface-container-lowest: 18 18 20;
+  --surface-container-low: 28 28 32;
+  --surface-container: 34 34 39;
+  --surface-container-high: 40 40 46;
+  --surface-container-highest: 46 46 53;
+  --surface-variant: 46 46 53;
+  --surface-tint: 168 168 174;
+  --hairline: 38 38 44; /* #26262c */
+  --hairline-strong: 90 90 100;
+  --body-text: 168 168 174;
+  --mute-text: 122 122 130;
+  --on-surface: 230 230 232;
+  --on-surface-variant: 190 192 194;
+  --outline: 130 132 134;
+  --outline-variant: 70 72 76;
+  --primary: 255 255 255; /* high-emphasis surface inverts to light */
+  --on-primary: 17 17 17;
+  --secondary: 240 90 100;
+  --secondary-container: 219 50 55;
+  --tertiary-container: 207 167 0;
+  --error: 255 138 128;
+  --on-error: 40 0 2;
+  --error-container: 60 20 22;
+  --on-error-container: 255 218 214;
+  --ember-start: 255 77 77;
+  --ember-end: 249 203 40;
+  --ok: 52 211 153; /* emerald-400 */
+  --ok-soft: 6 78 59; /* emerald-900 */
+  --warn: 251 191 36;
+
   color-scheme: dark;
 }
 
@@ -13,18 +96,71 @@ body,
 }
 
 body {
-  @apply bg-crucible-bg text-zinc-200 font-sans antialiased;
+  @apply bg-background text-body-text antialiased;
+  font-family: "Geist", system-ui, -apple-system, sans-serif;
   margin: 0;
+}
+
+/* ------------------------------------------------------------------ *
+ *  Brand utilities — the single "ember" accent.
+ * ------------------------------------------------------------------ */
+.ember-gradient {
+  background-image: linear-gradient(
+    135deg,
+    rgb(var(--ember-start)) 0%,
+    rgb(var(--ember-end)) 100%
+  );
+}
+.ember-text {
+  background-image: linear-gradient(
+    135deg,
+    rgb(var(--ember-start)) 0%,
+    rgb(var(--ember-end)) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Material Symbols defaults: outlined, optical-size aligned with text. */
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+  vertical-align: middle;
+  user-select: none;
+  font-size: 20px;
+  line-height: 1;
+}
+.material-symbols-outlined.fill {
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
 }
 
 /* Quiet, on-brand scrollbars. */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-thumb {
-  @apply bg-crucible-border rounded-full;
+  @apply bg-surface-container-highest rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-outline-variant;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
+}
+
+/* Native form controls follow the theme. */
+input,
+textarea,
+button {
+  font-family: inherit;
 }
