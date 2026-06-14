@@ -7,7 +7,7 @@ import { Button } from "../components/ui/Button";
 import { Icon } from "../components/ui/Icon";
 import { CopyButton, Toggle } from "../components/ui/controls";
 
-const APP_VERSION = "0.1.0";
+const APP_VERSION = "0.2.0";
 const REPO_URL = "https://github.com/Macmilan24/Crucible";
 const DOCS_URL = "https://macmilan24.github.io/Crucible/";
 
