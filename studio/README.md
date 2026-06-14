@@ -68,11 +68,11 @@ npm run tauri build -- --config src-tauri/tauri.bundle.conf.json
 In CI, [`studio-release.yml`](../.github/workflows/studio-release.yml) does this on
 macOS and Linux automatically on a `v*` tag.
 
-> **Status (honest):** the sidecar *wiring* is done and the dev path is verified.
-> The freeze itself (PyInstaller bundling `llama-cpp-python` with its native backend
-> / Metal shaders) is the finicky part and is validated by the first real build — it
-> may need per-OS tuning. **Windows** doesn't freeze a sidecar yet, so the Windows
-> installer falls back to a `crucible` CLI on PATH until that's added.
+> **Status:** the sidecar freeze is **validated end-to-end on macOS (Apple Silicon)** —
+> the frozen `crucible-server` loads a GGUF and serves real inference (llama.cpp +
+> Metal) with no Python installed. **Linux** builds the same way in CI. **Windows**
+> doesn't freeze a sidecar yet, so its installer falls back to a `crucible` CLI on
+> PATH until a Windows freeze is added.
 
 ## How it fits together
 
